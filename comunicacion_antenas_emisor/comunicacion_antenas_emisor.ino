@@ -34,14 +34,29 @@ const byte address[6] = "00001";
 void setup() {
   Serial.begin(9600);
   radio.begin();
+  /*Pone el amplificador de nivel al mínimo valor posible. Determina la fuerza con la que la señal es transmitida
+    por lo tanto significa que estamos poniendo al mínimo el nivel de potencia de la transmisión pero también consume menos energía.
+    FIXIT:  Cuando tengamos una versión final del submarino tendrémos que cambiar este valor para poder manejarlo desde mas distancia.
+  */
   radio.setPALevel(RF24_PA_MIN);
+
+  /*Pone la transmisión de datos a 250 Kb/s, determina la velocidad con la que se pueden enviar datos. También es importante porque como 
+    se ha comentado antes aunque pueda ir a mas velocidad, capando ese límite podemos asegurarnos de que el envío sea mas seguro 
+
+  */
   radio.setDataRate(RF24_250KBPS);
+
+  /*Determina la dirección de envío de los datos. En nuestro caso hemos declarado anteriormente la variable address como un array de x elementos*/
   radio.openWritingPipe(address);
 }
 
 void loop() {
+  //TODO: Se implementará un sistema parecido al ACK de protocolos de red. No sé si para esta versión se encriptará información o se comprobará que llega
+  //el mensaje entero con alguna clave hash pero algo así se intentará.
   const char text[] = "me gustan las papitas";
+  //Selecciona el puntero a text y recoge de tamaño toda la longitud del mensaje (envía el mensaje entero.)
   radio.write(&text, sizeof(text));
+  //Si el mensaje es enviado. Se escribe por pantalla
   Serial.println("Mensaje enviado: ");
   Serial.println(text);
   delay(1000);
